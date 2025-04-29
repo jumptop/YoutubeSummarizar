@@ -14,11 +14,11 @@ import isodate #동영상 길이 보기 쉽게 초단위로 조정
 # OAuth 2.0 클라이언트 파일 경로 및 범위
 CLIENT_SECRET_FILE = 'client_secret.json'
 SCOPES = [
-    'https://www.googleapis.com/auth/youtube.readonly',
-    'https://www.googleapis.com/auth/youtube.force-ssl',
-    'openid',
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile'
+    'https://www.googleapis.com/auth/youtube.readonly', # 읽기 접근권한 허용
+    'https://www.googleapis.com/auth/youtube.force-ssl', # youtube api에 전체접근권한 제공
+    'openid', # 사용자 인증
+    'https://www.googleapis.com/auth/userinfo.email', # 사용자 이메일에 접근할 수 있는 권한 요청
+    'https://www.googleapis.com/auth/userinfo.profile' # 사용자의 공개 프로필 정보에 접근할 수 있는 권한 요청
 ]
 
 # env파일 로드
@@ -29,27 +29,27 @@ openai.api_key = os.getenv("openai.api_key")
 
 # 사용자 인증을 처리하고 토큰을 저장
 def get_authenticated_service():
-    creds = None
+    creds = None # 인증 정보를 저장하는 객체
     token_file = 'token.json'
 
-    if os.path.exists(token_file):
+    if os.path.exists(token_file): # 토큰 파일이 존재하는지 확인
         creds = Credentials.from_authorized_user_file(token_file, SCOPES)
 
-    if not creds or not creds.valid or not creds.refresh_token:
+    if not creds or not creds.valid or not creds.refresh_token: # 토큰 유효성 검사
         if os.path.exists(token_file):
             os.remove(token_file)
 
-        if creds and creds.expired and creds.refresh_token:
+        if creds and creds.expired and creds.refresh_token: # 토큰 갱신
             creds.refresh(Request())
-        else:
+        else: # 기존 인증 정보가 없거나 갱신이 불가능하면 새 로그인 프로세스 실행
             flow = InstalledAppFlow.from_client_secrets_file(
                 CLIENT_SECRET_FILE, SCOPES)
             creds = flow.run_local_server(port=8080, prompt='consent', access_type='offline')
 
-        with open(token_file, 'w') as token:
+        with open(token_file, 'w') as token: # 새로 발급받은 인증 정보를 저장(쓰기모드)
             token.write(creds.to_json())
 
-    return build('youtube', 'v3', credentials=creds)
+    return build('youtube', 'v3', credentials=creds) # 인증 정보를 활용해 youtube api 서비스 객체를 생성, 반환
 
 # 동영상 길이를 초로 변환하는 함수
 def convert_duration_to_seconds(duration):
