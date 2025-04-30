@@ -62,4 +62,59 @@ streamlit run app.py
 
 ## 라이선스
 
-MIT License 
+MIT License
+
+## 아키텍처 구조
+
+```mermaid
+graph TD
+    A[사용자] --> B[Streamlit 웹 인터페이스]
+    B --> C[YouTube API 통합]
+    B --> D[OpenAI GPT API 통합]
+    
+    C --> E[동영상 데이터 수집]
+    C --> F[자막 데이터 수집]
+    
+    E --> G[데이터 처리]
+    F --> G
+    
+    G --> H[데이터 시각화]
+    G --> I[자막 요약]
+    
+    I --> D
+    
+    subgraph 백엔드
+        C
+        D
+        E
+        F
+        G
+        H
+        I
+    end
+    
+    subgraph 프론트엔드
+        B
+    end
+```
+
+### 주요 컴포넌트 설명
+
+1. **프론트엔드**
+   - Streamlit 웹 인터페이스
+     - 사용자 입력 처리
+     - 데이터 시각화 표시
+     - 검색 결과 표시
+
+2. **백엔드**
+   - YouTube API 통합
+     - 동영상 메타데이터 수집
+     - 자막 데이터 수집
+   - OpenAI GPT API 통합
+     - 자막 요약 생성
+   - 데이터 처리
+     - Pandas를 통한 데이터 정제
+     - Plotly를 통한 시각화
+
+3. **데이터 흐름**
+   - 사용자 입력 → API 요청 → 데이터 수집 → 처리 → 시각화/요약 → 결과 표시 
