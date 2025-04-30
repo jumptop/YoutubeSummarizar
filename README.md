@@ -69,52 +69,74 @@ MIT License
 ```mermaid
 graph TD
     A[사용자] --> B[Streamlit 웹 인터페이스]
-    B --> C[YouTube API 통합]
-    B --> D[OpenAI GPT API 통합]
     
-    C --> E[동영상 데이터 수집]
-    C --> F[자막 데이터 수집]
+    B --> C1[일반/Short 영상 분석]
+    B --> C2[유튜브 검색]
+    B --> C3[자막 요약]
     
-    E --> G[데이터 처리]
-    F --> G
+    C1 --> D1[YouTube API]
+    C2 --> D1
     
-    G --> H[데이터 시각화]
-    G --> I[자막 요약]
+    C3 --> D2[YouTube Transcript API]
+    D2 --> D3[OpenAI GPT API]
     
-    I --> D
+    D1 --> E[데이터 처리]
+    E --> F[데이터 시각화]
     
-    subgraph 백엔드
-        C
-        D
-        E
-        F
-        G
-        H
-        I
+    D3 --> G[요약 결과]
+    
+    subgraph 기능
+        C1
+        C2
+        C3
     end
     
-    subgraph 프론트엔드
-        B
+    subgraph API
+        D1
+        D2
+        D3
+    end
+    
+    subgraph 결과
+        F
+        G
     end
 ```
 
 ### 주요 컴포넌트 설명
 
-1. **프론트엔드**
-   - Streamlit 웹 인터페이스
-     - 사용자 입력 처리
-     - 데이터 시각화 표시
-     - 검색 결과 표시
+1. **기능**
+   - 일반/Short 영상 분석
+     - YouTube API를 통한 좋아요한 동영상 목록 수집
+     - 동영상 메타데이터 분석
+   - 유튜브 검색
+     - 검색어 기반 동영상 검색
+     - 검색 결과 메타데이터 수집
+   - 자막 요약
+     - URL 입력을 통한 자막 수집
+     - GPT를 이용한 자막 요약
 
-2. **백엔드**
-   - YouTube API 통합
+2. **API 통합**
+   - YouTube Data API v3
      - 동영상 메타데이터 수집
+     - 검색 기능
+   - YouTube Transcript API
      - 자막 데이터 수집
-   - OpenAI GPT API 통합
+   - OpenAI GPT API
      - 자막 요약 생성
+
+3. **데이터 처리 및 결과**
    - 데이터 처리
      - Pandas를 통한 데이터 정제
-     - Plotly를 통한 시각화
+     - 카테고리 매핑
+   - 데이터 시각화
+     - Plotly를 통한 그래프 생성
+     - 카테고리별 분포도
+   - 요약 결과
+     - GPT를 통한 자막 요약
+     - 요약된 내용 표시
 
-3. **데이터 흐름**
-   - 사용자 입력 → API 요청 → 데이터 수집 → 처리 → 시각화/요약 → 결과 표시 
+4. **데이터 흐름**
+   - 일반/Short 영상: 사용자 → YouTube API → 데이터 처리 → 시각화
+   - 유튜브 검색: 검색어 → YouTube API → 데이터 처리 → 결과 표시
+   - 자막 요약: URL → Transcript API → GPT API → 요약 결과 
